@@ -75,7 +75,7 @@ WSGI_APPLICATION = 'BrickSmasher.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'django.db.backends.sqlite3', # using sqlite3 as db
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
