@@ -10,7 +10,7 @@ class Customer(models.Model):
 
 class Movies(models.Model):
     title = models.CharField(primary_key=True, max_length=60)
-    quantity = models.IntegerField()
+    quantity = models.IntegerField(default=0)
 
 
 class Rentals(models.Model):
