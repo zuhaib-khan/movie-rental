@@ -20,7 +20,7 @@ def account(request):
         
         if Customer.objects.filter(pk=email_id).exists():
         # Customer already present, failure
-            Customer.objects.get(pk=email_id)
+            # Customer.objects.get(pk=email_id)
             return render(request, "app/account.html", {"form": NewAccountForm(), "status": -1})
         else:
         # Add the new customer to the db, success
@@ -32,7 +32,20 @@ def account(request):
 
 
 def movie(request):
-    return HttpResponse("Placeholder for now.")
+    movies = Movies.objects.all()
+    if request.method == "POST":
+
+        title=request.POST["title"]
+        
+        if Movies.objects.filter(pk=title).exists():
+        # Movie already present, failure
+            return render(request, "app/movie.html", {"form": NewMovieForm(), "movie_list": movies, "status": -1})
+        else:
+        # Add the new movie to the db, success
+            customer = Movies(title=title)
+            customer.save()
+            return render(request, "app/movie.html", {"form": NewMovieForm(), "movie_list": movies})
+    return render(request, "app/movie.html", {"form": NewMovieForm(), "movie_list": movies})
 
 
 def rent(request):
@@ -54,3 +67,6 @@ class NewAccountForm(forms.Form): # Form for creating a new account
     email_id = forms.EmailField(label="Email ID")
     first_name = forms.CharField(label="First Name")
     last_name = forms.CharField(label="Last Name")
+    
+class NewMovieForm(forms.Form): # Form for creating a new movie
+    title = forms.CharField(label="Title")

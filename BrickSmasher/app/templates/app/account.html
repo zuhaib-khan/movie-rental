@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Home</title>
+        <title>Create Account</title>
     </head>
     <body>
         <a href="{% url 'app:index' %}">Home</a>
@@ -10,11 +10,11 @@
             {% csrf_token %}
             {{ form }}
         <input type="submit", value="Create Account">
-    </form>
-    {% if status == 1 %}
-        <h3 style="color:green;">Account Created!</h3>
-    {% elif status == -1 %}
-        <h3 style="color:red;">Failure: Email ID already exists!</h3>
-    {% endif %}
+        </form>
+        {% if status == 1 %}
+            <h3 style="color:green;">Account Created!</h3>
+        {% elif status == -1 %}
+            <h3 style="color:red;">Failure: Email ID already exists!</h3>
+        {% endif %}
     </body>
 </html>
