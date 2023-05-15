@@ -4,10 +4,10 @@ from . import views
 
 urlpatterns = [
     path("", views.index, name="index"),
-    path("/account", views.index, name="account"),
-    path("/movie", views.index, name="movie"),
-    path("/rent", views.index, name="rent"),
-    path("/dbUser", views.index, name="dbUser"),
-    path("/dbMovie", views.index, name="dbMovie"),
-    path("/dbRent", views.index, name="dbRent"),
+    path("account", views.account, name="account"),
+    path("movie", views.movie, name="movie"),
+    path("rent", views.rent, name="rent"),
+    path("dbUser", views.db_user, name="db_user"),
+    path("dbMovie", views.db_movie, name="db_movie"),
+    path("dbRent", views.db_rent, name="db_rent"),
 ]
