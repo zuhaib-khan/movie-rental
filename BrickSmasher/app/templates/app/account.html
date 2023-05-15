@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Home</title>
+    </head>
+    <body>
+        <a href="{% url 'app:index' %}">Home</a>
+        <h4>Add Customer:</h4>
+        <form action="{% url 'app:account' %}" method="post">
+            {% csrf_token %}
+            {{ form }}
+        <input type="submit">
+    </form>
+    </body>
+</html>
