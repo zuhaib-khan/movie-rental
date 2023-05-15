@@ -14,6 +14,9 @@ class Movies(models.Model):
 
 
 class Rentals(models.Model):
-    email_id = models.ManyToManyField(Customer)
-    title = models.ManyToManyField(Movies)
+    email_id = models.ForeignKey(Customer, on_delete=models.RESTRICT)
+    title = models.ForeignKey(Movies, on_delete=models.RESTRICT)
+    
+    class Meta:
+        unique_together = (('email_id', 'title'),)
     
