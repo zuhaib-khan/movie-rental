@@ -17,15 +17,17 @@ def account(request):
         email_id=request.POST["email_id"]
         first_name=request.POST["first_name"]
         last_name=request.POST["last_name"]
-
-        # Add the new customer to the db
-        c = Customer(email_id=email_id, first_name=first_name, last_name=last_name)
-        c.save()
-
-        # Redirect user to Home
-        return HttpResponseRedirect(reverse("app:index"))
-
-
+        
+        if Customer.objects.filter(pk=email_id).exists():
+        # Customer already present, failure
+            Customer.objects.get(pk=email_id)
+            return render(request, "app/account.html", {"form": NewAccountForm(), "status": -1})
+        else:
+        # Add the new customer to the db, success
+            customer = Customer(email_id=email_id, first_name=first_name, last_name=last_name)
+            customer.save()
+            return render(request, "app/account.html", {"form": NewAccountForm(), "status": 1})
+    
     return render(request, "app/account.html", {"form": NewAccountForm()})
 
 

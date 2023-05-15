@@ -9,7 +9,12 @@
         <form action="{% url 'app:account' %}" method="post">
             {% csrf_token %}
             {{ form }}
-        <input type="submit">
+        <input type="submit", value="Create Account">
     </form>
+    {% if status == 1 %}
+        <h3 style="color:green;">Account Created!</h3>
+    {% elif status == -1 %}
+        <h3 style="color:red;">Failure: Email ID already exists!</h3>
+    {% endif %}
     </body>
 </html>
