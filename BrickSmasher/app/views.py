@@ -3,6 +3,8 @@ from django.http import HttpResponse
 from django import forms
 from django.urls import reverse
 from django.http import HttpResponseRedirect
+from django.forms import ModelForm
+from django.forms.models import model_to_dict
 
 from .models import Customer, Rentals, Movies
 
@@ -33,19 +35,24 @@ def account(request):
 
 def movie(request):
     movies = Movies.objects.all()
+    
+    prefilled_movie_forms = []
+    for movie in movies:
+        prefilled_movie_forms.append(MoviesForm(model_to_dict(movie)))
+    
     if request.method == "POST":
 
         title=request.POST["title"]
         
         if Movies.objects.filter(pk=title).exists():
         # Movie already present, failure
-            return render(request, "app/movie.html", {"form": NewMovieForm(), "movie_list": movies, "status": -1})
+            return render(request, "app/movie.html", {"form": NewMovieForm(), "movies_form": prefilled_movie_forms, "movie_list": movies, "status": -1})
         else:
         # Add the new movie to the db, success
-            customer = Movies(title=title)
-            customer.save()
-            return render(request, "app/movie.html", {"form": NewMovieForm(), "movie_list": movies})
-    return render(request, "app/movie.html", {"form": NewMovieForm(), "movie_list": movies})
+            movie = Movies(title=title)
+            movie.save()
+            return render(request, "app/movie.html", {"form": NewMovieForm(),  "movies_form": prefilled_movie_forms, "movie_list": movies})
+    return render(request, "app/movie.html", {"form": NewMovieForm(),  "movies_form": prefilled_movie_forms, "movie_list": movies})
 
 
 def rent(request):
@@ -56,7 +63,11 @@ def db_user(request):
 
 
 def db_movie(request):
-    return HttpResponse("Placeholder for now.")
+    title = request.POST["title"]
+    print("mmm", title)
+    quantity = request.POST["quantity"]
+    Movies(title=title, quantity=quantity).save()
+    return HttpResponseRedirect(reverse("app:movie"))
 
 
 def db_rent(request):
@@ -70,3 +81,8 @@ class NewAccountForm(forms.Form): # Form for creating a new account
     
 class NewMovieForm(forms.Form): # Form for creating a new movie
     title = forms.CharField(label="Title")
+
+class MoviesForm(ModelForm):
+    class Meta:
+        model = Movies
+        fields = '__all__'

@@ -5,17 +5,24 @@
     </head>
     <body>
         <a href="{% url 'app:index' %}">Home</a>
+        <p></p>
         <form action="{% url 'app:movie' %}" method="post">
             {% csrf_token %}
             {{ form }}
         <input type="submit", value="Add Movie">
         </form>
         <h2>Movies</h2>
-        <ul>
-            {% for movie in movie_list %}
-            <li>{{movie.title}}  {{movie.quantity}}</li>
+        {% for form in movies_form %}
+        <form action="{% url 'app:db_movie' %}" method="post">
+            {% csrf_token %}  
+            <!-- {{ form }} -->
+            {% for field in form %}
+                {{ field }}
             {% endfor %}
-        </ul>
+            <button type="submit" name="update">Update</button>
+            <br>
+        </form>
+        {% endfor %}
 
         {% if status == -1 %}
             <h3 style="color:red;">Movie already exists!</h3>
