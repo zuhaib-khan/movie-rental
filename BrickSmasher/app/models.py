@@ -9,11 +9,11 @@ class Customer(models.Model):
     
 
 class Movies(models.Model):
-    title = models.CharField(primary_key=True)
+    title = models.CharField(primary_key=True, max_length=60)
     quantity = models.IntegerField()
 
 
 class Rentals(models.Model):
-    email_id = models.ForeignKey(Customer, primary_key=True)
-    title = models.ForeignKey(Movies, primary_key=True)
+    email_id = models.ManyToManyField(Customer)
+    title = models.ManyToManyField(Movies)
     
