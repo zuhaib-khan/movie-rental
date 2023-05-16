@@ -16,10 +16,15 @@
             <h4>{{ name }}</h4>
         </div>
         <h3> All Movies</h3>
-        <ol>
-            {% for movie in all_movies %}
-                <li> {{ movie }}</li>
+        {% for form in prefilled_movie_forms %}
+        <form action="{% url 'app:db_rent' %}" method="post">
+            {% csrf_token %}  
+            {% for field in form %}
+                {{ field }}
             {% endfor %}
-        </ol>
+            <button type="submit" name="rent">Rent</button>
+            <br>
+        </form>
+        {% endfor %}
     </body>
 </html>
