@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Rent</title>
+        <title>Rent</title> 
     </head>
     <body>
         <a href="{% url 'app:index' %}">Home</a>
@@ -11,9 +11,15 @@
             {{ form }}
         <input type="submit", value="Retrieve Rentals">
         </form>
-        <h3>{{ email_id }}</h3>
-        <h4>{{ name }}</h4>
-        <h2>Movies</h2>
-
+        <div style="background-color:cyan">
+            <h3>{{ email_id }}</h3>
+            <h4>{{ name }}</h4>
+        </div>
+        <h3> All Movies</h3>
+        <ol>
+            {% for movie in all_movies %}
+                <li> {{ movie }}</li>
+            {% endfor %}
+        </ol>
     </body>
 </html>

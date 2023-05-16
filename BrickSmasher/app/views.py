@@ -57,16 +57,17 @@ def movie(request):
 
 def rent(request):
     if request.method == "POST":
-        email_id = request.POST["email_id"]
+
+        movies = Movies.objects.all()
+        all_movies = [movie.title for movie in movies]
         
+        email_id = request.POST["email_id"]
         customer = Customer.objects.filter(pk=email_id)
         name = customer[0].first_name  + " " + customer[0].last_name
-        # name = "temp"
-        print("lll", customer)
         
         rentals =  Rentals.objects.filter(email_id=email_id).all()
         print("lll", rentals)
-        return render(request, "app/rent.html", {"form": RetrieveRentalsForm(), "email_id": email_id, "name": name})
+        return render(request, "app/rent.html", {"form": RetrieveRentalsForm(), "email_id": email_id, "name": name, "all_movies": all_movies})
 
     return render(request, "app/rent.html", {"form": RetrieveRentalsForm()})
         
