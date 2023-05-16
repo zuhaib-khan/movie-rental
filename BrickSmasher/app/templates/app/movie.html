@@ -29,7 +29,7 @@
         {% endfor %}
     </table>
 
-    <button>Submit</button>
+    <button onclick="submitData()">Submit</button>
 
     <script type="text/javascript">
         function increase(id) {
@@ -44,6 +44,18 @@
             if (currentValue > 0) {
                 element.innerHTML = currentValue - 1;
             }
+        }
+
+        function submitData() {
+            var data = {};
+            {% for movie in movie_list %}
+                data["{{ movie.title }}"] = document.getElementById("{{ movie.title }}").innerHTML;
+            {% endfor %}
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "{% url 'app:db_movie' %}", true);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhr.send(JSON.stringify(data));
         }
     </script>
 </body>

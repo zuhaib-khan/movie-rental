@@ -5,8 +5,10 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.forms import ModelForm
 from django.forms.models import model_to_dict
-
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from .models import Customer, Rentals, Movies
+import json
 
 
 def index(request):
@@ -80,11 +82,15 @@ def db_user(request):
     return HttpResponse("Placeholder for now.")
 
 
+@csrf_exempt
 def db_movie(request):
-    title = request.POST["title"]
-    quantity = request.POST["quantity"]
-    Movies(title=title, quantity=quantity).save()
-    return HttpResponseRedirect(reverse("app:movie"))
+    if request.method == 'POST':
+        movies = json.loads(request.body)
+        for title, quantity in movies.items():
+            Movies(title=title, quantity=quantity).save()
+        return JsonResponse({'status': 'success'})
+    else:
+        return JsonResponse({'status': 'error'})
 
 
 def db_rent(request):
