@@ -58,19 +58,18 @@ def movie(request):
 def rent(request):
     movies = Movies.objects.all()
     
-    prefilled_movie_forms = []
+    all_movies = []
     for movie in movies:
-        prefilled_movie_forms.append(NewMovieForm({"title": model_to_dict(movie)["title"]}))
+        all_movies.append(model_to_dict(movie)["title"])
 
     if request.method == "POST":
-        
         email_id = request.POST["email_id"]
         customer = Customer.objects.filter(pk=email_id)
         name = customer[0].first_name  + " " + customer[0].last_name
         
         # rentals =  Rentals.objects.filter(email_id=email_id).all()
         # print("lll", rentals)
-        return render(request, "app/rent.html", {"form": RetrieveRentalsForm(), "email_id": email_id, "name": name, "prefilled_movie_forms": prefilled_movie_forms})
+        return render(request, "app/rent.html", {"form": RetrieveRentalsForm(), "email_id": email_id, "name": name, "all_movies": all_movies})
 
     return render(request, "app/rent.html", {"form": RetrieveRentalsForm()})
         
@@ -83,14 +82,26 @@ def db_user(request):
 
 def db_movie(request):
     title = request.POST["title"]
-    print("mmm", title)
     quantity = request.POST["quantity"]
     Movies(title=title, quantity=quantity).save()
     return HttpResponseRedirect(reverse("app:movie"))
 
 
 def db_rent(request):
-    return HttpResponse("Placeholder for now.")
+    title = request.POST["title"]
+    email_id = request.POST["email_id"]
+    customer = Customer.objects.filter(pk=email_id)
+    name = customer[0].first_name  + " " + customer[0].last_name
+    movie = Movies(title=title)
+    quantity = int(movie.quantity)
+    
+    if quantity < 1:
+        return render(request, "app/rent.html", {"form": RetrieveRentalsForm(), "status": -1})
+    
+    print("lll", request.POST)
+    
+    # rent = Rent
+    # if quantity > 0 && 
 
 
 class NewAccountForm(forms.Form): # Form for creating a new account
