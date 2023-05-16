@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Rent</title>
+    </head>
+    <body>
+        <a href="{% url 'app:index' %}">Home</a>
+        <p></p>
+        <form action="{% url 'app:rent' %}" method="post">
+            {% csrf_token %}
+            {{ form }}
+        <input type="submit", value="Retrieve Rentals">
+        </form>
+        <h3>{{ email_id }}</h3>
+        <h4>{{ name }}</h4>
+        <h2>Movies</h2>
+
+    </body>
+</html>

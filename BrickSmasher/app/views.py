@@ -56,7 +56,22 @@ def movie(request):
 
 
 def rent(request):
-    return HttpResponse("Placeholder for now.")
+    if request.method == "POST":
+        email_id = request.POST["email_id"]
+        
+        customer = Customer.objects.filter(pk=email_id)
+        name = customer[0].first_name  + " " + customer[0].last_name
+        # name = "temp"
+        print("lll", customer)
+        
+        rentals =  Rentals.objects.filter(email_id=email_id).all()
+        print("lll", rentals)
+        return render(request, "app/rent.html", {"form": RetrieveRentalsForm(), "email_id": email_id, "name": name})
+
+    return render(request, "app/rent.html", {"form": RetrieveRentalsForm()})
+        
+        
+        
 
 def db_user(request):
     return HttpResponse("Placeholder for now.")
@@ -81,6 +96,9 @@ class NewAccountForm(forms.Form): # Form for creating a new account
     
 class NewMovieForm(forms.Form): # Form for creating a new movie
     title = forms.CharField(label="Title")
+    
+class RetrieveRentalsForm(forms.Form):
+    email_id = forms.EmailField(label="Email ID")
 
 class MoviesForm(ModelForm):
     class Meta:
