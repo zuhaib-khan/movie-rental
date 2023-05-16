@@ -1,31 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <title>Movies</title>
-    </head>
-    <body>
-        <a href="{% url 'app:index' %}">Home</a>
-        <p></p>
-        <form action="{% url 'app:movie' %}" method="post">
-            {% csrf_token %}
-            {{ form }}
-        <input type="submit", value="Add Movie">
-        </form>
-        <h2>Movies</h2>
-        {% for form in movies_form %}
-        <form action="{% url 'app:db_movie' %}" method="post">
-            {% csrf_token %}  
-            <!-- {{ form }} -->
-            {% for field in form %}
-                {{ field }}
-            {% endfor %}
-            <button type="submit" name="update">Update</button>
-            <br>
-        </form>
-        {% endfor %}
+<html>
+<head>
+    <title>Movie Table</title>
+</head>
+<body>
+    <a href="{% url 'app:index' %}">Home</a>
+    <p></p>
+    <form action="{% url 'app:movie' %}" method="post">
+        {% csrf_token %}
+        {{ form }}
+    <input type="submit", value="Add Movie">
+    </form>
 
-        {% if status == -1 %}
-            <h3 style="color:red;">Movie already exists!</h3>
-        {% endif %}
-    </body>
+    <br>
+
+    <table>
+        <tr>
+            <th>Movie Title</th>
+            <th>Quantity</th>
+            <th></th>
+        </tr>
+        {% for movie in movie_list %}
+        <tr>
+            <td>{{ movie.title }}</td>
+            <td id="{{ movie.title }}">{{ movie.quantity }}</td>
+            <td><button onclick="decrease('{{ movie.title }}')">-</button><button onclick="increase('{{ movie.title }}')">+</button></td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <button>Submit</button>
+
+    <script type="text/javascript">
+        function increase(id) {
+            var element = document.getElementById(id);
+            var currentValue = parseInt(element.innerHTML);
+            element.innerHTML = currentValue + 1;
+        }
+
+        function decrease(id) {
+            var element = document.getElementById(id);
+            var currentValue = parseInt(element.innerHTML);
+            if (currentValue > 0) {
+                element.innerHTML = currentValue - 1;
+            }
+        }
+    </script>
+</body>
 </html>
