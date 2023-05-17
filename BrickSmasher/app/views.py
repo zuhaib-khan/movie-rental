@@ -88,21 +88,17 @@ def db_movie(request):
     return JsonResponse({'status': 'error'})
 
 
+@csrf_exempt
 def db_rent(request):
-    title = request.POST["title"]
-    email_id = request.POST["email_id"]
-    customer = Customer.objects.filter(pk=email_id)
-    name = customer[0].first_name  + " " + customer[0].last_name
-    movie = Movies(title=title)
-    quantity = int(movie.quantity)
-    
-    if quantity < 1:
-        return render(request, "app/rent.html", {"form": RetrieveRentalsForm(), "status": -1})
-    
-    print("lll", request.POST)
-    
-    # rent = Rent
-    # if quantity > 0 && 
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        title = data.get('title')
+        email_id = data.get("email_id")
+        customer = Customer.objects.get(email_id=email_id)
+        movie = Movies.objects.get(title=title)
+        Rentals(email_id=customer, title=movie).save()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
 
 
 class CustomerForm(forms.ModelForm):
