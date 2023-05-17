@@ -16,23 +16,8 @@ def index(request):
 
 
 def account(request):
-    if request.method == "POST":
-
-        email_id=request.POST["email_id"]
-        first_name=request.POST["first_name"]
-        last_name=request.POST["last_name"]
-        
-        if Customer.objects.filter(pk=email_id).exists():
-        # Customer already present, failure
-            # Customer.objects.get(pk=email_id)
-            return render(request, "app/account.html", {"form": NewAccountForm(), "status": -1})
-        else:
-        # Add the new customer to the db, success
-            customer = Customer(email_id=email_id, first_name=first_name, last_name=last_name)
-            customer.save()
-            return render(request, "app/account.html", {"form": NewAccountForm(), "status": 1})
-    
-    return render(request, "app/account.html", {"form": NewAccountForm()})
+    form = CustomerForm()
+    return render(request, 'app/account.html', {'form': form})
 
 
 def movie(request):
@@ -56,12 +41,20 @@ def rent(request):
         return render(request, "app/rent.html", {"form": RetrieveRentalsForm(), "email_id": email_id, "name": name, "all_movies": all_movies})
 
     return render(request, "app/rent.html", {"form": RetrieveRentalsForm()})
-        
-        
-        
 
+
+@csrf_exempt
 def db_user(request):
-    return HttpResponse("Placeholder for now.")
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        email_id = request.POST.get('email_id')
+        if Customer.objects.filter(email_id=email_id).exists():
+            return JsonResponse({'error': 'Email already exists!'}, status=400)
+        else:
+            customer = Customer(first_name=first_name, last_name=last_name, email_id=email_id)
+            customer.save()
+            return JsonResponse({'message': 'Account created successfully!'}, status=201)
 
 
 @csrf_exempt
@@ -86,10 +79,7 @@ def db_movie(request):
             else:
                 if movie.quantity > 0:
                     movie.quantity -= 1
-            if movie.quantity == 0:
-                movie.delete()
-            else:
-                movie.save()
+            movie.save()
             return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'error'})
 
@@ -111,10 +101,10 @@ def db_rent(request):
     # if quantity > 0 && 
 
 
-class NewAccountForm(forms.Form): # Form for creating a new account
-    email_id = forms.EmailField(label="Email ID")
-    first_name = forms.CharField(label="First Name")
-    last_name = forms.CharField(label="Last Name")
+class CustomerForm(forms.ModelForm):
+    class Meta:
+        model = Customer
+        fields = '__all__'
     
 class NewMovieForm(forms.Form): # Form for creating a new movie
     title = forms.CharField(label="Title")

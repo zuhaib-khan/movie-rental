@@ -2,20 +2,45 @@
 <html lang="en">
     <head>
         <title>Create Account</title>
+        <style>
+            #message.success {
+                color: green;
+            }
+            #message.error {
+                color: red;
+            }
+        </style>
     </head>
     <body>
         <a href="{% url 'app:index' %}">Home</a>
         <p></p>
-        <h4>Add Customer:</h4>
-        <form action="{% url 'app:account' %}" method="post">
+        <form id="customer-form" method="post">
             {% csrf_token %}
             {{ form }}
-        <input type="submit", value="Create Account">
+            <input type="submit" value="Create Account">
         </form>
-        {% if status == 1 %}
-            <h3 style="color:green;">Account Created!</h3>
-        {% elif status == -1 %}
-            <h3 style="color:red;">Failure: Email ID already exists!</h3>
-        {% endif %}
+        
+        <div id="message"></div>
+        
+        <script>
+            document.querySelector("#customer-form").addEventListener("submit", function(event) {
+                event.preventDefault();
+                let data = new FormData(event.target);
+                let xhr = new XMLHttpRequest();
+                xhr.open("POST", "{% url 'app:db_user' %}");
+                xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                xhr.onload = function() {
+                    let messageElement = document.querySelector("#message");
+                    if (xhr.status === 201) {
+                        messageElement.innerHTML = "Account created successfully!";
+                        messageElement.classList.add("success");
+                    } else if (xhr.status === 400) {
+                        messageElement.innerHTML = "Email already exists!";
+                        messageElement.classList.add("error");
+                    }
+                };
+                xhr.send(data);
+            });
+        </script>
     </body>
 </html>

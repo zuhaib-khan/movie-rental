@@ -5,10 +5,8 @@
     </head>
     <body>
         <h2>Home</h2>
-        <ul>
-            <li><a href="{% url 'app:account' %}">Create Account</a></li>
-            <li><a href="{% url 'app:rent' %}">Rent/Return Movies</a></li>
-            <li><a href="{% url 'app:movie' %}">Manage Movies</a></li>
-        </ul>
+        <a href="{% url 'app:account' %}">Create Account</a><br><br>
+        <a href="{% url 'app:movie' %}">Manage Movies</a><br><br>
+        <a href="{% url 'app:rent' %}">Rent/Return Movies</a><br><br>
     </body>
 </html>
