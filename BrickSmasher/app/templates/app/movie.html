@@ -1,61 +1,95 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Movie Table</title>
+    <title>Movie List</title>
 </head>
 <body>
     <a href="{% url 'app:index' %}">Home</a>
     <p></p>
-    <form action="{% url 'app:movie' %}" method="post">
-        {% csrf_token %}
-        {{ form }}
-    <input type="submit", value="Add Movie">
-    </form>
+    <input type="text" id="new-movie-title" placeholder="Title">
+    <button id="new-movie-btn">Add Movie</button>
 
-    <br>
-
+    <h2>Movie List</h2>
     <table>
-        <tr>
-            <th>Movie Title</th>
-            <th>Quantity</th>
-            <th></th>
-        </tr>
-        {% for movie in movie_list %}
-        <tr>
-            <td>{{ movie.title }}</td>
-            <td id="{{ movie.title }}">{{ movie.quantity }}</td>
-            <td><button onclick="decrease('{{ movie.title }}')">-</button><button onclick="increase('{{ movie.title }}')">+</button></td>
-        </tr>
-        {% endfor %}
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Quantity</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody></tbody>
     </table>
 
-    <button onclick="submitData()">Submit</button>
-
-    <script type="text/javascript">
-        function increase(id) {
-            var element = document.getElementById(id);
-            var currentValue = parseInt(element.innerHTML);
-            element.innerHTML = currentValue + 1;
-        }
-
-        function decrease(id) {
-            var element = document.getElementById(id);
-            var currentValue = parseInt(element.innerHTML);
-            if (currentValue > 0) {
-                element.innerHTML = currentValue - 1;
-            }
-        }
-
-        function submitData() {
-            var data = {};
-            {% for movie in movie_list %}
-                data["{{ movie.title }}"] = document.getElementById("{{ movie.title }}").innerHTML;
-            {% endfor %}
-
+    <script>
+        function loadMovies() {
             var xhr = new XMLHttpRequest();
-            xhr.open("POST", "{% url 'app:db_movie' %}", true);
-            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            xhr.send(JSON.stringify(data));
+            xhr.open('GET', '{% url "app:db_movie" %}');
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    var tableBody = document.querySelector('table tbody');
+                    tableBody.innerHTML = '';
+                    data.movies.forEach(function(movie) {
+                        var row = document.createElement('tr');
+                        row.innerHTML = '<td>' + movie.title + '</td><td>' + movie.quantity + '</td><td><button class="minus-btn">-</button><button class="plus-btn">+</button></td>';
+                        tableBody.appendChild(row);
+                    });
+                }
+            };
+            xhr.send();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMovies();
+
+            document.querySelector('#new-movie-btn').addEventListener('click', function() {
+                var title = document.querySelector('#new-movie-title').value;
+                if (title) {
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', '{% url "app:db_movie" %}');
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                    xhr.onload = function() {
+                        if (xhr.status === 200) {
+                            var data = JSON.parse(xhr.responseText);
+                            if (data.status == 'success') {
+                                loadMovies();
+                                document.querySelector('#new-movie-title').value = '';
+                            } else {
+                                alert('An error occurred while adding the movie.');
+                            }
+                        }
+                    };
+                    xhr.send(encodeURI('action=new&title=' + title));
+                }
+            });
+        });
+
+        document.addEventListener('click', function(event) {
+            if (event.target.matches('.plus-btn')) {
+                var title = event.target.closest('tr').querySelector('td:first-child').textContent;
+                updateMovie(title, 'add');
+            } else if (event.target.matches('.minus-btn')) {
+                var title = event.target.closest('tr').querySelector('td:first-child').textContent;
+                updateMovie(title, 'remove');
+            }
+        });
+
+        function updateMovie(title, action) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '{% url "app:db_movie" %}');
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    if (data.status == 'success') {
+                        loadMovies();
+                    } else {
+                        alert('An error occurred while updating the movie.');
+                    }
+                }
+            };
+            xhr.send(encodeURI('action=' + action + '&title=' + title));
         }
     </script>
 </body>

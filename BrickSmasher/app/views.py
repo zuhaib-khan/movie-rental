@@ -36,25 +36,7 @@ def account(request):
 
 
 def movie(request):
-    movies = Movies.objects.all()
-    
-    prefilled_movie_forms = []
-    for movie in movies:
-        prefilled_movie_forms.append(MoviesForm(model_to_dict(movie)))
-    
-    if request.method == "POST":
-
-        title=request.POST["title"]
-        
-        if Movies.objects.filter(pk=title).exists():
-        # Movie already present, failure
-            return render(request, "app/movie.html", {"form": NewMovieForm(), "movies_form": prefilled_movie_forms, "movie_list": movies, "status": -1})
-        else:
-        # Add the new movie to the db, success
-            movie = Movies(title=title)
-            movie.save()
-            return render(request, "app/movie.html", {"form": NewMovieForm(),  "movies_form": prefilled_movie_forms, "movie_list": movies})
-    return render(request, "app/movie.html", {"form": NewMovieForm(),  "movies_form": prefilled_movie_forms, "movie_list": movies})
+    return render(request, "app/movie.html")
 
 
 def rent(request):
@@ -84,13 +66,26 @@ def db_user(request):
 
 @csrf_exempt
 def db_movie(request):
-    if request.method == 'POST':
-        movies = json.loads(request.body)
-        for title, quantity in movies.items():
-            Movies(title=title, quantity=quantity).save()
-        return JsonResponse({'status': 'success'})
-    else:
-        return JsonResponse({'status': 'error'})
+    if request.method == 'GET':
+        movies = list(Movies.objects.values())
+        return JsonResponse({'movies': movies})
+    elif request.method == 'POST':
+        action = request.POST.get('action')
+        title = request.POST.get('title')
+        if action == 'new':
+            movie = Movies(title=title, quantity=1)
+            movie.save()
+            return JsonResponse({'status': 'success'})
+        elif action in ['add', 'remove']:
+            movie = Movies.objects.get(title=title)
+            if action == 'add':
+                movie.quantity += 1
+            else:
+                if movie.quantity > 0:
+                    movie.quantity -= 1
+            movie.save()
+            return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error'})
 
 
 def db_rent(request):
@@ -120,8 +115,3 @@ class NewMovieForm(forms.Form): # Form for creating a new movie
     
 class RetrieveRentalsForm(forms.Form):
     email_id = forms.EmailField(label="Email ID")
-
-class MoviesForm(ModelForm):
-    class Meta:
-        model = Movies
-        fields = '__all__'
