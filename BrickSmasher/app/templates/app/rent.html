@@ -18,6 +18,13 @@
         </form>
         <p id="user-info"></p>
 
+        <h2>Available Movies</h2>
+        <table id="available-movies">
+            <tr>
+                <th>Title</th>
+            </tr>
+        </table>
+
     
         <script>
             document.getElementById("email-form").addEventListener("submit", function(event) {
@@ -34,6 +41,23 @@
                 userInfoRequest.open("GET", "{% url 'app:db_user' %}?email_id=" + email, true);
                 userInfoRequest.send();
             });
+
+            var availableMoviesRequest = new XMLHttpRequest();
+            availableMoviesRequest.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    var availableMovies = JSON.parse(this.responseText)["movies"];
+                    var availableMoviesTable = document.getElementById("available-movies");
+                    console.log(availableMovies)
+                    for (var i = 0; i < availableMovies.length; i++) {
+                        var row = availableMoviesTable.insertRow(-1);
+                        var titleCell = row.insertCell(0);
+                        console.log(availableMovies)
+                        titleCell.innerHTML = availableMovies[i].title;
+                    }
+                }
+            };
+            availableMoviesRequest.open("GET", "{% url 'app:db_movie' %}", true);
+            availableMoviesRequest.send();
         </script>
     </body>
 </html>
