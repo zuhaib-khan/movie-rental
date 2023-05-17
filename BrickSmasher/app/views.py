@@ -45,6 +45,10 @@ def rent(request):
 
 @csrf_exempt
 def db_user(request):
+    if request.method == 'GET':
+        email_id = request.GET.get('email_id')
+        customer = Customer.objects.filter(email_id=email_id).values('first_name', 'last_name').first()
+        return JsonResponse(customer)
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
