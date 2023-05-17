@@ -67,7 +67,7 @@ def db_user(request):
 @csrf_exempt
 def db_movie(request):
     if request.method == 'GET':
-        movies = list(Movies.objects.values())
+        movies = list(Movies.objects.order_by('title').values())
         return JsonResponse({'movies': movies})
     elif request.method == 'POST':
         action = request.POST.get('action')
