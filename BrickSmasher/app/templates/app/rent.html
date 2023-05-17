@@ -18,6 +18,13 @@
         </form>
         <p id="user-info"></p>
 
+        <h2>Rented Movies</h2>
+        <table id="rented-movies">
+            <tr>
+                <th>Title</th>
+            </tr>
+        </table>
+
         <h2>Available Movies</h2>
         <table id="available-movies">
             <tr>
@@ -43,6 +50,23 @@
                 userInfoRequest.send();
             });
 
+            document.getElementById("email-form").addEventListener("submit", function(event) {
+                var rentedMoviesRequest = new XMLHttpRequest();
+                rentedMoviesRequest.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        var rentedMovies = JSON.parse(this.responseText)["rentals"];
+                        var rentedMoviesTable = document.getElementById("rented-movies");
+                        for (var i = 0; i < rentedMovies.length; i++) {
+                            var row = rentedMoviesTable.insertRow(-1);
+                            var titleCell = row.insertCell(0);
+                            titleCell.innerHTML = rentedMovies[i].title_id; // TODO: change after model change
+                        }
+                    }
+                }
+                rentedMoviesRequest.open("GET", "{% url 'app:db_rent' %}?email_id=" + email, true);
+                rentedMoviesRequest.send();
+            });
+
             var availableMoviesRequest = new XMLHttpRequest();
             availableMoviesRequest.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
@@ -58,17 +82,17 @@
             availableMoviesRequest.open("GET", "{% url 'app:db_movie' %}", true);
             availableMoviesRequest.send();
 
-        function rentMovie(title) {
-            var rentMovieRequest = new XMLHttpRequest();
-            rentMovieRequest.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    // Handle successful rent
-                }
-            };
-            rentMovieRequest.open("POST", "{% url 'app:db_rent' %}", true);
-            rentMovieRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            let data = {"title": title, "email_id": email}
-            rentMovieRequest.send(JSON.stringify(data));
+            function rentMovie(title) {
+                var rentMovieRequest = new XMLHttpRequest();
+                rentMovieRequest.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        // Handle successful rent
+                    }
+                };
+                rentMovieRequest.open("POST", "{% url 'app:db_rent' %}", true);
+                rentMovieRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                let data = {"title": title, "email_id": email}
+                rentMovieRequest.send(JSON.stringify(data));
         }
             
         </script>

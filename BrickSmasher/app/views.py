@@ -90,6 +90,11 @@ def db_movie(request):
 
 @csrf_exempt
 def db_rent(request):
+    if request.method == 'GET':
+        email_id = request.GET.get('email_id')
+        rentals = list(Rentals.objects.filter(email_id_id=email_id).values())
+        return JsonResponse({"rentals": rentals})
+        
     if request.method == 'POST':
         data = json.loads(request.body)
         title = data.get('title')
