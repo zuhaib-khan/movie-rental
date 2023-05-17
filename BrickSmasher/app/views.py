@@ -71,11 +71,14 @@ def db_movie(request):
         return JsonResponse({'movies': movies})
     elif request.method == 'POST':
         action = request.POST.get('action')
-        title = request.POST.get('title')
+        title = request.POST.get('title').strip()
         if action == 'new':
-            movie = Movies(title=title, quantity=1)
-            movie.save()
-            return JsonResponse({'status': 'success'})
+            if Movies.objects.filter(title=title).exists():
+                return JsonResponse({'status': 'error', 'error': 'title_exists'})
+            else:
+                movie = Movies(title=title, quantity=1)
+                movie.save()
+                return JsonResponse({'status': 'success'})
         elif action in ['add', 'remove']:
             movie = Movies.objects.get(title=title)
             if action == 'add':
@@ -83,7 +86,10 @@ def db_movie(request):
             else:
                 if movie.quantity > 0:
                     movie.quantity -= 1
-            movie.save()
+            if movie.quantity == 0:
+                movie.delete()
+            else:
+                movie.save()
             return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'error'})
 

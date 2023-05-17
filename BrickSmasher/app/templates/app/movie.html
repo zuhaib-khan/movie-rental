@@ -2,6 +2,23 @@
 <html>
 <head>
     <title>Movie List</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid lightgray;
+        }
+        th:nth-child(2), td:nth-child(2) {
+            border-left: 1px solid lightgray;
+        }
+        #error-msg {
+            color: red;
+            display: none;
+        }
+    </style>
 </head>
 <body>
     <a href="{% url 'app:index' %}">Home</a>
@@ -20,6 +37,8 @@
         </thead>
         <tbody></tbody>
     </table>
+
+    <p id="error-msg"></p>
 
     <script>
         function loadMovies() {
@@ -45,7 +64,7 @@
 
             document.querySelector('#new-movie-btn').addEventListener('click', function() {
                 var title = document.querySelector('#new-movie-title').value;
-                if (title) {
+                if (title && title.trim()) {
                     var xhr = new XMLHttpRequest();
                     xhr.open('POST', '{% url "app:db_movie" %}');
                     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -55,12 +74,19 @@
                             if (data.status == 'success') {
                                 loadMovies();
                                 document.querySelector('#new-movie-title').value = '';
+                                document.querySelector('#error-msg').style.display = 'none';
+                            } else if (data.status == 'error' && data.error == 'title_exists') {
+                                document.querySelector('#error-msg').textContent = 'Error: A movie with this title already exists.';
+                                document.querySelector('#error-msg').style.display = 'block';
                             } else {
                                 alert('An error occurred while adding the movie.');
                             }
                         }
                     };
                     xhr.send(encodeURI('action=new&title=' + title));
+                } else {
+                    document.querySelector('#error-msg').textContent = 'Error: The title cannot be empty or only contain whitespaces.';
+                    document.querySelector('#error-msg').style.display = 'block';
                 }
             });
         });
