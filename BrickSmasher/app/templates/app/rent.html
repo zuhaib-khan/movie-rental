@@ -6,6 +6,17 @@
             #user-info {
                 color: green;
             }
+            table {
+                border-collapse: collapse;
+                border: 1px solid lightgray;
+            }
+            th, td {
+                border: 1px solid lightgray;
+            }
+            th {
+                background-color: lightgray;
+            }
+
         </style>
     </head>
     <body>
@@ -18,17 +29,16 @@
         </form>
         <p id="user-info"></p>
 
-        <h2>Rented Movies</h2>
         <table id="rented-movies">
             <tr>
-                <th>Title</th>
+                <th>Rented Movies</th>
             </tr>
         </table>
+        <br> <br>
 
-        <h2>Available Movies</h2>
         <table id="available-movies">
             <tr>
-                <th>Title</th>
+                <th>Available Movies</th>
             </tr>
         </table>
 
