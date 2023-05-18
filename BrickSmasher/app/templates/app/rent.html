@@ -59,7 +59,8 @@
                         for (var i = 0; i < rentedMovies.length; i++) {
                             var row = rentedMoviesTable.insertRow(-1);
                             var titleCell = row.insertCell(0);
-                            titleCell.innerHTML = rentedMovies[i].title_id; // TODO: change after model change
+                            // TODO: change after model change
+                            titleCell.innerHTML = "<a href='#' onclick='returnMovie(\"" + rentedMovies[i].title_id + "\")'>" + rentedMovies[i].title_id + "</a>";
                         }
                     }
                 }
@@ -91,9 +92,22 @@
                 };
                 rentMovieRequest.open("POST", "{% url 'app:db_rent' %}", true);
                 rentMovieRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-                let data = {"title": title, "email_id": email}
+                let data = {"action": "rent", "title": title, "email_id": email}
                 rentMovieRequest.send(JSON.stringify(data));
-        }
+            }
+
+            function returnMovie(title) {
+                var rentMovieRequest = new XMLHttpRequest();
+                rentMovieRequest.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        // Handle successful rent
+                    }
+                };
+                rentMovieRequest.open("POST", "{% url 'app:db_rent' %}", true);
+                rentMovieRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                let data = {"action": "return", "title": title, "email_id": email}
+                rentMovieRequest.send(JSON.stringify(data));
+            }
             
         </script>
     </body>

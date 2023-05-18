@@ -97,11 +97,16 @@ def db_rent(request):
         
     if request.method == 'POST':
         data = json.loads(request.body)
+        action = data.get('action')
         title = data.get('title')
         email_id = data.get("email_id")
         customer = Customer.objects.get(email_id=email_id)
         movie = Movies.objects.get(title=title)
-        Rentals(email_id=customer, title=movie).save()
+        if action == "rent":
+            Rentals(email_id=customer, title=movie).save()
+        if action == "return":
+            rental = Rentals.objects.get(email_id=customer, title=movie)
+            rental.delete()
         return JsonResponse({'success': True})
     return JsonResponse({'success': False})
 
