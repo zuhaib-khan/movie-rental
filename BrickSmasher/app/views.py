@@ -108,6 +108,9 @@ def db_rent(request):
         customer = Customer.objects.get(email_id=email_id)
         movie = Movies.objects.get(title=title)
         if action == "rent":
+            rental_count = Rentals.objects.filter(title_id=title).count()
+            if rental_count >= movie.quantity:
+                return JsonResponse({'success': False})
             Rentals(email_id=customer, title=movie).save()
         if action == "return":
             rental = Rentals.objects.get(email_id=customer, title=movie)
