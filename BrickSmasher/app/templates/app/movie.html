@@ -47,6 +47,17 @@
             xhr.onload = function() {
                 if (xhr.status === 200) {
                     var data = JSON.parse(xhr.responseText);
+
+                    let checkouts;
+                    xhrCheckout = new XMLHttpRequest();
+                    xhrCheckout.open('GET', '{% url "app:db_rent" %}?title=" + title');
+                    xhrCheckout.onload = function() {
+                        checkouts = JSON.parse(xhrCheckout.responseText);
+                        console.log(checkouts);
+                    }
+                    xhrCheckout.send()
+                    
+
                     var tableBody = document.querySelector('table tbody');
                     tableBody.innerHTML = '';
                     data.movies.forEach(function(movie) {

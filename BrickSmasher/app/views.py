@@ -92,8 +92,13 @@ def db_movie(request):
 def db_rent(request):
     if request.method == 'GET':
         email_id = request.GET.get('email_id')
-        rentals = list(Rentals.objects.filter(email_id_id=email_id).values())
-        return JsonResponse({"rentals": rentals})
+        title = request.GET.get('title')
+        if email_id:
+            rentals = list(Rentals.objects.filter(email_id_id=email_id).values())
+            return JsonResponse({"rentals": rentals})
+        if title:
+            rentals = list(Rentals.objects.filter(title_id=title).values())
+            return JsonResponse({"rentals": rentals})
         
     if request.method == 'POST':
         data = json.loads(request.body)
