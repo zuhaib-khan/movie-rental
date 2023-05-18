@@ -124,16 +124,20 @@
             }
 
             function rentMovie(title) {
-                var rentMovieRequest = new XMLHttpRequest();
-                rentMovieRequest.onreadystatechange = function() {
-                    if (this.readyState == 4 && this.status == 200) {
-                        refreshTables();
-                    }
-                };
-                rentMovieRequest.open("POST", "{% url 'app:db_rent' %}", true);
-                rentMovieRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-                let data = {"action": "rent", "title": title, "email_id": email}
-                rentMovieRequest.send(JSON.stringify(data));
+                var rentedMoviesTable = document.getElementById("rented-movies");
+                var rentedMoviesCount = rentedMoviesTable.rows.length - 1;
+                if (rentedMoviesCount < 3) {
+                    var rentMovieRequest = new XMLHttpRequest();
+                    rentMovieRequest.onreadystatechange = function() {
+                        if (this.readyState == 4 && this.status == 200) {
+                            refreshTables();
+                        }
+                    };
+                    rentMovieRequest.open("POST", "{% url 'app:db_rent' %}", true);
+                    rentMovieRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                    let data = {"action": "rent", "title": title, "email_id": email}
+                    rentMovieRequest.send(JSON.stringify(data));
+                }
             }
 
             function returnMovie(title) {
