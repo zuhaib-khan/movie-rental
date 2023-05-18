@@ -95,7 +95,7 @@ def db_rent(request):
         if action == "rent":
             rental_count = Rentals.objects.filter(title_id=title).count()
             if rental_count >= movie.quantity:
-                return JsonResponse({'success': False})
+                return JsonResponse({'error': 'Out of stock'}, status=404)
             Rentals(email_id=customer, title=movie).save()
         if action == "return":
             rental = Rentals.objects.get(email_id=customer, title=movie)

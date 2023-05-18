@@ -16,6 +16,9 @@
             th {
                 background-color: lightgray;
             }
+            #error-msg {
+                color: red;
+            }
 
         </style>
     </head>
@@ -35,6 +38,8 @@
             </tr>
         </table>
         <br> <br>
+
+        <p id="error-msg"></p>
 
         <table id="available-movies">
             <tr>
@@ -139,9 +144,15 @@
                 if (rentedMoviesCount < 3) {
                     var rentMovieRequest = new XMLHttpRequest();
                     rentMovieRequest.onreadystatechange = function() {
-                        if (this.readyState == 4 && this.status == 200) {
-                            refreshTables();
+                        if (this.readyState == 4) {
+                            if (this.status == 200) {
+                                refreshTables();
+                            } else if (this.status == 404) {
+                                var errorMsg = document.getElementById("error-msg");
+                                errorMsg.textContent = "Error: All VHS tapes are checked out for this movie!";
+                            }
                         }
+                    
                     };
                     rentMovieRequest.open("POST", "{% url 'app:db_rent' %}", true);
                     rentMovieRequest.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
@@ -149,6 +160,7 @@
                     rentMovieRequest.send(JSON.stringify(data));
                 }
             }
+
 
             function returnMovie(title) {
                 var rentMovieRequest = new XMLHttpRequest();
